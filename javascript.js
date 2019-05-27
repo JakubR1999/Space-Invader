@@ -31,7 +31,15 @@ function start(){
 
 start();
 
-function draw() {
+document.addEventListener("keydown", keySpace);
+
+function keySpace(e){
+	if( e == SPACE ){
+		ctx.clearRect( 0, 0, gameWidth, gameHeight);
+	}
+};
+
+function block() {
 	ctx.beginPath();
 	ctx.moveTo(25, 600);
 	ctx.lineTo(25, 583);
@@ -53,13 +61,6 @@ function draw() {
 	ctx.fill();
 	ctx.closePath();
 	ctx.stroke();
-}
-
-document.addEventListener("keydown", keySpace);
-
-function keySpace(e){
-	if( e == SPACE ){
-		ctx.clearRect( 0, 0, gameWidth, gameHeight);
-	}
 };
-	
+
+block();	
