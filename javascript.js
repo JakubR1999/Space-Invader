@@ -10,23 +10,46 @@ function game(){
 		gameWidth: 750,
 		gameHeight: 750
 	};
-
+	this.x;
+	this.y;
+	this.wid;
+	this.hei;
+	this.vx;
 	this.lives = 3;
 	this.score = 0;
 	this.level = 1;
-	
-}
+	this.draw = function(){
+		this.x += this.vx;
+		ctx.beginPath();
+		ctx.rect(this.x, this.y, this.wid, this.hei);
+		ctx.fillStyle = this.color;
+		ctx.fill();
+		ctx.closePath();
+		ctx.stroke();
+	};
+};
+
+var Game = new game;
+var width = Game.size.gameWidth;
+var height = Game.size.gameHeight;
+
+var player = new game;
+player.x = 20;
+player.y = 730;
+player.wid = 20;
+player.hei = 20;
+player.vx = 0;
+player.color = "green";
 
 function start(){
-	ctx.clearRect( 0, 0, gameWidth, gameHeight);
+	ctx.clearRect( 0, 0, width, height);
 	ctx.font = "50px Arial";
-	ctx.fillStyle = '#ffffff';
+	ctx.fillStyle = 'white';
 	ctx.textBaseline = "center";
 	ctx.textAlign = "center";
-	ctx.fillText("Space Invaders", gameWidth / 2 , gameHeight / 2);
+	ctx.fillText("Space Invaders", width / 2 , height / 2);
 	ctx.font = "25px Arial";
-	ctx.fillText("Press 'Space' to start the game.", gameWidth / 2 , gameHeight / 2 - 80);
-	
+	ctx.fillText("Press 'Space' to start the game.", width / 2 , height / 2 - 80);
 };
 
 start();
@@ -34,9 +57,29 @@ start();
 document.addEventListener("keydown", keySpace);
 
 function keySpace(e){
-	if( e == SPACE ){
-		ctx.clearRect( 0, 0, gameWidth, gameHeight);
+	var kod = e.keyCode;
+	if( kod == SPACE ){
+		ctx.clearRect( 0, 0, width, height);
+		window.requestAnimationFrame(callback);
 	}
+};
+
+document.addEventListener("keydown", move);
+
+function move(e){
+	var kod = e.keyCode;
+	if( kod == LEFT && player.x >= 10){
+		player.vx = -10;
+	}
+	if( kod == RIGHT && player.x <= 740){
+		player.vx = 10;
+	}
+};
+
+document.addEventListener("keyup", keyUp);
+
+function keyUp(){
+	player.vx = 0;
 };
 
 function block() {
@@ -58,9 +101,20 @@ function block() {
 	ctx.lineTo(33, 595);
 	ctx.lineTo(33, 600);
 	ctx.lineTo(25, 600);
+	ctx.fillStyle = "brown";
 	ctx.fill();
 	ctx.closePath();
 	ctx.stroke();
 };
 
-block();	
+function print(){
+	player.draw();
+	block();
+};
+
+function callback()
+{
+	window.requestAnimationFrame(callback);
+	ctx.clearRect(0, 0, width, height);
+	print();
+};
