@@ -4,6 +4,7 @@ var ctx = canvas.getContext('2d');
 var SPACE = 32;
 var LEFT = 37;
 var RIGHT = 39;
+var LSHIFT = 16;
 
 function game(){
 	this.size = {
@@ -15,11 +16,13 @@ function game(){
 	this.wid;
 	this.hei;
 	this.vx;
+	this.vy;
 	this.lives = 3;
 	this.score = 0;
 	this.level = 1;
 	this.draw = function(){
 		this.x += this.vx;
+		this.y += this.vy;
 		ctx.beginPath();
 		ctx.rect(this.x, this.y, this.wid, this.hei);
 		ctx.fillStyle = this.color;
@@ -39,8 +42,43 @@ player.y = 730;
 player.wid = 20;
 player.hei = 20;
 player.vx = 0;
+player.vy = 0;
 player.color = "green";
 
+var bulletP = new game;
+bulletP.x = 0;
+bulletP.y = 0;
+bulletP.wid = 5;
+bulletP.hei = 15;
+bulletP.vy = -5;
+bulletP.vx = 0;
+bulletP.color = "grey";
+
+var blocks = new Array;
+for( var i=0; i < 3; i++)
+{
+	blocks[i] = new game;
+	blocks[i].x = 100 + 250 * i;
+	blocks[i].y = 600;
+	blocks[i].wid = 50;
+	blocks[i].hei = 50;
+	blocks[i].vy = 0;
+	blocks[i].vx = 0;
+	blocks[i].color = "brown";
+}
+/*
+var aliensA = new Array;
+for( var i=0; i < 6; i++)
+{
+	alienA[i].x
+	alienA[i].y
+	alienA[i].wid
+	alienA[i].hei
+	alienA[i].vy = 0;
+	if( 
+		alienA[i].vx = 2;
+*/
+		
 function start(){
 	ctx.clearRect( 0, 0, width, height);
 	ctx.font = "50px Arial";
@@ -69,10 +107,21 @@ document.addEventListener("keydown", move);
 function move(e){
 	var kod = e.keyCode;
 	if( kod == LEFT && player.x >= 10){
-		player.vx = -10;
+		player.vx = -5;
 	}
 	if( kod == RIGHT && player.x <= 740){
-		player.vx = 10;
+		player.vx = 5;
+	}
+};
+
+document.addEventListener("keydown", bulletMove);
+
+function bulletMove(e){
+	var kod = e.keyCode;
+	if( kod == LSHIFT){
+		bulletP.x = player.x + 8;
+		bulletP.y = player.y;
+		bulletP.draw();
 	}
 };
 
@@ -82,34 +131,12 @@ function keyUp(){
 	player.vx = 0;
 };
 
-function block() {
-	ctx.beginPath();
-	ctx.moveTo(25, 600);
-	ctx.lineTo(25, 583);
-	ctx.lineTo(30, 583);
-	ctx.lineTo(30, 570);
-	ctx.lineTo(35, 570);
-	ctx.lineTo(35, 565);
-	ctx.lineTo(50, 565);
-	ctx.lineTo(50, 570);
-	ctx.lineTo(55, 570);
-	ctx.lineTo(55, 583);
-	ctx.lineTo(60, 583);
-	ctx.lineTo(60, 600);
-	ctx.lineTo(52, 600);
-	ctx.lineTo(52, 595);
-	ctx.lineTo(33, 595);
-	ctx.lineTo(33, 600);
-	ctx.lineTo(25, 600);
-	ctx.fillStyle = "brown";
-	ctx.fill();
-	ctx.closePath();
-	ctx.stroke();
-};
-
 function print(){
 	player.draw();
-	block();
+	bulletP.draw();
+	blocks[0].draw();
+	blocks[1].draw();
+	blocks[2].draw();
 };
 
 function callback()
