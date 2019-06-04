@@ -66,19 +66,23 @@ for( var i=0; i < 3; i++)
 	blocks[i].vx = 0;
 	blocks[i].color = "brown";
 }
-/*
-var aliensA = new Array;
-for( var i=0; i < 6; i++)
+
+var alienA = new Array;
+for( var i = 0; i < 6; i++)
 {
-	alienA[i].x
-	alienA[i].y
-	alienA[i].wid
-	alienA[i].hei
+	for( var j = 0; j < 5; j++)
+	{
+	alienA[i] = new game;
+	alienA[i].x = 100 + 50 * i;
+	alienA[i].y = 150;
+	alienA[i].wid = 30;
+	alienA[i].hei = 30;
 	alienA[i].vy = 0;
-	if( 
-		alienA[i].vx = 2;
-*/
-		
+	alienA[i].vx = 0;
+	alienA[i].color = "orange";
+	}
+}
+	
 function start(){
 	ctx.clearRect( 0, 0, width, height);
 	ctx.font = "50px Arial";
@@ -137,6 +141,24 @@ function print(){
 	blocks[0].draw();
 	blocks[1].draw();
 	blocks[2].draw();
+	for( var i = 0; i < 6; i++)
+	{
+		alienA[i].draw();
+	}
+	if( alienA[5].x == 600) {
+		for( var i = 0; i < 6; i++)
+		{
+			alienA[i].vx = -2;
+			alienA[i].y += 5;
+		}
+	}
+	if( alienA[0].x == 100) {
+		for( var i = 0; i < 6; i++)
+		{
+			alienA[i].vx = 2;
+			alienA[i].y += 5;
+		}
+	}
 };
 
 function callback()
