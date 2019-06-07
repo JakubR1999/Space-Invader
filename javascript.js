@@ -17,7 +17,7 @@ function game(){
 	this.hei;
 	this.vx;
 	this.vy;
-	this.lives = 3;
+	this.lifes;
 	this.score = 0;
 	this.level = 1;
 	this.draw = function(){
@@ -43,6 +43,7 @@ player.wid = 20;
 player.hei = 20;
 player.vx = 0;
 player.vy = 0;
+player.lifes = 3;
 player.color = "green";
 
 var bulletP = new game;
@@ -67,19 +68,22 @@ for( var i=0; i < 3; i++)
 	blocks[i].color = "brown";
 }
 
-var alienA = new Array;
+var alienA = new Array(6);
 for( var i = 0; i < 6; i++)
 {
+	alienA[i] = new Array(5) 
 	for( var j = 0; j < 5; j++)
 	{
-	alienA[i] = new game;
-	alienA[i].x = 100 + 50 * i;
-	alienA[i].y = 150;
-	alienA[i].wid = 30;
-	alienA[i].hei = 30;
-	alienA[i].vy = 0;
-	alienA[i].vx = 0;
-	alienA[i].color = "orange";
+	alienA[i][j] = new game;
+	alienA[i][j].x = 50 + 50 * i;
+	alienA[i][j].y = 150 + 50 * j;
+	alienA[i][j].wid = 30;
+	alienA[i][j].hei = 30;
+	alienA[i][j].vy = 0;
+	alienA[i][j].vx = 0;
+	alienA[i][j].color = "orange";
+	
+	
 	}
 }
 	
@@ -135,28 +139,75 @@ function keyUp(){
 	player.vx = 0;
 };
 
+function collision(otherobj) {
+	if( bulletP.x + bulletP.wid > otherobj.x && bulletP.x + bulletP.wid < otherobj.x + otherobj.wid)
+	{
+		if( bulletP.y + bulletP.hei > otherobj.y && bulletP.y + bulletP.hei < otherobj.y + otherobj.hei)
+		{
+			otherobj.x = 0;
+			otherobj.y = 0;
+			otherobj.wid = 0;
+			otherobj.hei = 0;
+			otherobj.vy = 0;
+			otherobj.vx = 0;
+		}
+	}
+};
+
 function print(){
 	player.draw();
 	bulletP.draw();
 	blocks[0].draw();
 	blocks[1].draw();
 	blocks[2].draw();
+	
 	for( var i = 0; i < 6; i++)
 	{
-		alienA[i].draw();
+		for( var j = 0; j < 5; j++)
+		alienA[i][j].draw();
 	}
-	if( alienA[5].x == 600) {
-		for( var i = 0; i < 6; i++)
+	
+	for( var i = 0; i < 6; i++)
+	{
+		for( var j = 0; j < 5; j++)
 		{
-			alienA[i].vx = -2;
-			alienA[i].y += 5;
+			if( alienA[i][j].x == 400 + i * 50)
+			{
+				alienA[i][j].vx = -2;
+				alienA[i][j].y += 5;
+			}
 		}
 	}
-	if( alienA[0].x == 100) {
-		for( var i = 0; i < 6; i++)
+	
+	for( var i = 0; i < 6; i++)
+	{
+		for( var j = 0; j < 5; j++)
 		{
-			alienA[i].vx = 2;
-			alienA[i].y += 5;
+			if( alienA[i][j].x == 50 + 50 * i)
+			{
+				alienA[i][j].vx = 2;
+				alienA[i][j].y += 5;
+			}
+		}
+	}
+
+	
+	for( var i = 0; i < 6; i++)
+	{
+		for( var j = 0; j < 5; j++)
+		{
+			collision(alienA[i][j]);
+		}
+	}
+	
+	for( var i = 0; i < 5; i++);
+	{
+		for( var j = 0; j < 4; j++)
+		{
+			if ( alienA[i][j].x == player.x && alienA[i][j].y == player.y )
+			{
+				player.lifes--;
+			}
 		}
 	}
 };
