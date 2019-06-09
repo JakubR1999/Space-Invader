@@ -11,24 +11,37 @@ function game(){
 		gameWidth: 750,
 		gameHeight: 750
 	};
+	this.type;
+	if( this.type == "image")
+	{
+		this.image = new Image();
+		this.image.src = this.color;
+	}
 	this.x;
 	this.y;
 	this.wid;
 	this.hei;
 	this.vx;
 	this.vy;
-	this.lifes;
+	this.lives;
 	this.score = 0;
 	this.level = 1;
 	this.draw = function(){
 		this.x += this.vx;
 		this.y += this.vy;
-		ctx.beginPath();
-		ctx.rect(this.x, this.y, this.wid, this.hei);
-		ctx.fillStyle = this.color;
-		ctx.fill();
-		ctx.closePath();
-		ctx.stroke();
+		if( this.type == "image")
+		{
+			ctx.drawImage(this.image, this.x, this.y, this.wid, this.hei);
+		}
+		else
+		{
+			ctx.beginPath();
+			ctx.rect(this.x, this.y, this.wid, this.hei);
+			ctx.fillStyle = this.color;
+			ctx.fill();
+			ctx.closePath();
+			ctx.stroke();
+		}
 	};
 };
 
@@ -43,7 +56,8 @@ player.wid = 20;
 player.hei = 20;
 player.vx = 0;
 player.vy = 0;
-player.lifes = 3;
+player.score = 0;
+player.lives = 3;
 player.color = "green";
 
 var bulletP = new game;
@@ -74,19 +88,36 @@ for( var i = 0; i < 6; i++)
 	alienA[i] = new Array(5) 
 	for( var j = 0; j < 5; j++)
 	{
-	alienA[i][j] = new game;
-	alienA[i][j].x = 50 + 50 * i;
-	alienA[i][j].y = 150 + 50 * j;
-	alienA[i][j].wid = 30;
-	alienA[i][j].hei = 30;
-	alienA[i][j].vy = 0;
-	alienA[i][j].vx = 0;
-	alienA[i][j].color = "orange";
-	
-	
+		alienA[i][j] = new game;
+		alienA[i][j].x = 50 + 50 * i;
+		alienA[i][j].y = 150 + 50 * j;
+		alienA[i][j].wid = 30;
+		alienA[i][j].hei = 30;
+		alienA[i][j].vy = 0;
+		alienA[i][j].vx = 0;
+		//alienA[i][j].type = "image";
+		alienA[i][j].color = "orange";
 	}
 }
-	
+
+var bulletA = new game;
+bulletA.x = 0;
+bulletA.y = 0;
+bulletA.wid = 5;
+bulletA.hei = 15;
+bulletA.vx = 0;
+bulletA.vy = 5;
+bulletA.color = "grey";
+
+function alienShooting()
+{
+	bulletA.x = alienA[Math.floor(Math.random() * 6)][Math.floor(Math.random() * 5)].x + alienA[Math.floor(Math.random() * 6)][Math.floor(Math.random() * 5)].wid / 2 - 2;
+	bulletA.y = alienA[Math.floor(Math.random() * 6)][Math.floor(Math.random() * 5)].y + alienA[Math.floor(Math.random() * 6)][Math.floor(Math.random() * 5)].hei - 3;
+	bulletA.draw();
+};
+setInterval(alienShooting(), 1000);
+
+
 function start(){
 	ctx.clearRect( 0, 0, width, height);
 	ctx.font = "50px Arial";
@@ -100,6 +131,22 @@ function start(){
 
 start();
 
+function score(){
+	ctx.font = "40px Arial";
+	ctx.fillStyle = 'white';
+	ctx.textBaseline = "top";
+	ctx.textAlign = "center";
+	ctx.fillText("Score: " + player.score, 100 , 50);
+};
+
+function lives(){
+	ctx.font = "40px Arial";
+	ctx.fillStyle = 'white';
+	ctx.textBaseline = "top";
+	ctx.textAlign = "center";
+	ctx.fillText("Lives: " + player.lives, 650, 50);
+};
+	
 document.addEventListener("keydown", keySpace);
 
 function keySpace(e){
@@ -150,6 +197,7 @@ function collision(otherobj) {
 			otherobj.hei = 0;
 			otherobj.vy = 0;
 			otherobj.vx = 0;
+			player.score += 50;
 		}
 	}
 };
@@ -206,10 +254,15 @@ function print(){
 		{
 			if ( alienA[i][j].x == player.x && alienA[i][j].y == player.y )
 			{
-				player.lifes--;
+				player.lives--;
 			}
 		}
 	}
+	
+	lives();
+	
+	score();
+	
 };
 
 function callback()
