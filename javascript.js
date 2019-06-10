@@ -6,6 +6,8 @@ var LEFT = 37;
 var RIGHT = 39;
 var LSHIFT = 16;
 
+var aliensDown = 0;
+
 function game(){
 	this.size = {
 		gameWidth: 750,
@@ -111,23 +113,33 @@ for( var i = 0; i < 5; i++)
 	}
 }
 
-var bulletA = new game;
-bulletA.x = 0;
-bulletA.y = 0;
-bulletA.wid = 5;
-bulletA.hei = 15;
-bulletA.vx = 0;
-bulletA.vy = 5;
-bulletA.color = "grey";
+var bulletA = new Array;
+for( var i = 0; i < 3; i++)
+{
+	bulletA[i] = new game;
+	bulletA[i].x = 0;
+	bulletA[i].y = 0;
+	bulletA[i].wid = 5;
+	bulletA[i].hei = 15;
+	bulletA[i].vx = 0;
+	bulletA[i].vy = 5;
+	bulletA[i].color = "grey";
+}
+function alienDraw(n)
+{
+	bulletA[n].x = alienA[Math.floor(Math.random() * 5)][Math.floor(Math.random() * 6)].x + alienA[Math.floor(Math.random() * 5)][Math.floor(Math.random() * 6)].wid / 2 - 2;
+	bulletA[n].y = alienA[Math.floor(Math.random() * 5)][Math.floor(Math.random() * 6)].y + alienA[Math.floor(Math.random() * 5)][Math.floor(Math.random() * 6)].hei - 3;
+};
 
 function alienShooting()
 {
-	bulletA.x = alienA[Math.floor(Math.random() * 5)][Math.floor(Math.random() * 6)].x + alienA[Math.floor(Math.random() * 5)][Math.floor(Math.random() * 6)].wid / 2 - 2;
-	bulletA.y = alienA[Math.floor(Math.random() * 5)][Math.floor(Math.random() * 6)].y + alienA[Math.floor(Math.random() * 5)][Math.floor(Math.random() * 6)].hei - 3;
-	bulletA.draw();
+	for( var i = 0; i < 3; i++)
+	{
+		alienDraw(i);
+	}	
 };
-setInterval(alienShooting(), 1000);
 
+alienShooting();
 
 function start(){
 	ctx.clearRect( 0, 0, width, height);
@@ -203,19 +215,40 @@ function keyUp(){
 	player.vx = 0;
 };
 
-function collision(otherobj) {
+function collisionA(otherobj) {
 	if( bulletP.x + bulletP.wid > otherobj.x && bulletP.x + bulletP.wid < otherobj.x + otherobj.wid)
 	{
 		if( bulletP.y + bulletP.hei > otherobj.y && bulletP.y + bulletP.hei < otherobj.y + otherobj.hei)
 		{
-			otherobj.x = 0;
-			otherobj.y = 0;
+			otherobj.x = -1000;
+			otherobj.y = 740;
 			otherobj.wid = 0;
 			otherobj.hei = 0;
 			otherobj.vy = 0;
 			otherobj.vx = 0;
 			bulletP.y = 0;
+			aliensDown++;
 			player.score += 50;
+		}
+	}
+};
+
+function collisionP(otherobj)
+{
+	for(var i = 0; i < 3; i++)
+	{
+		if( bulletA[i].x + bulletA[i].wid > otherobj.x && bulletA[i].x + bulletA[i].wid < otherobj.x + otherobj.wid)
+		{
+			if( bulletA[i].y + bulletA[i].hei > otherobj.y && bulletA[i].y + bulletA[i].hei < otherobj.y + otherobj.hei)
+			{
+				otherobj.x = 40;
+				otherobj.y = 710;
+				otherobj.wid = 40;
+				otherobj.hei = 40;
+				otherobj.vy = 0;
+				otherobj.vx = 0;
+				player.lives--;
+			}
 		}
 	}
 };
@@ -226,6 +259,9 @@ function print(){
 	blocks[0].draw();
 	blocks[1].draw();
 	blocks[2].draw();
+	bulletA[0].draw();
+	bulletA[1].draw();
+	bulletA[2].draw();
 	
 	for( var i = 0; i < 5; i++)
 	{
@@ -239,8 +275,20 @@ function print(){
 		{
 			if( alienA[i][j].x == 400 + j * 50)
 			{
-				alienA[i][j].vx = -2;
+				alienA[i][j].vx = -1;
 				alienA[i][j].y += 5;
+				if( aliensDown > 10 )
+				{
+					alienA[i][j].vx = -2;
+				}
+				if( aliensDown > 21 )
+				{
+					alienA[i][j].vx = -5;
+				}
+				if( aliensDown > 26 )
+				{
+					alienA[i][j].vx = -10;
+				}
 			}
 		}
 	}
@@ -251,8 +299,20 @@ function print(){
 		{
 			if( alienA[i][j].x == 50 + 50 * j)
 			{
-				alienA[i][j].vx = 2;
+				alienA[i][j].vx = 1;
 				alienA[i][j].y += 5;
+				if( aliensDown > 10 )
+				{
+					alienA[i][j].vx = 2;
+				}
+				if( aliensDown > 21 )
+				{
+					alienA[i][j].vx = 5;
+				}
+				if( aliensDown > 26 )
+				{
+					alienA[i][j].vx = 5;
+				}
 			}
 		}
 	}
@@ -262,9 +322,11 @@ function print(){
 	{
 		for( var j = 0; j < 6; j++)
 		{
-			collision(alienA[i][j]);
+			collisionA(alienA[i][j]);
 		}
 	}
+	
+	collisionP(player);
 	
 	for( var i = 0; i < 4; i++);
 	{
@@ -296,6 +358,24 @@ function print(){
 		player.vx = 0;
 	}
 	
+	var draw1 = Math.floor(Math.random() * 5);
+	var draw2 = Math.floor(Math.random() * 6);
+	
+	for( var i = 0; i < 3; i++)
+	{
+		if( bulletA[i].y > 750 )
+		{
+			bulletA[i].x = alienA[draw1][draw2].x + alienA[draw1][draw2].wid / 2 - 2;
+			bulletA[i].y = alienA[draw1][draw2].y + alienA[draw1][draw2].hei - 3;
+		}
+	}
+	
+	if( player.lives == 0 )
+	{
+		var gameOver = new Image();
+		gameOver.src = "Gameover.jpg";
+		ctx.drawImage(gameOver, 0, 0, 750, 750);
+	}
 };
 
 function callback()
